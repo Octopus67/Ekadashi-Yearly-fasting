@@ -1,0 +1,7 @@
+{
+  "name": "Sadhana Sync",
+  "description": "A spiritual fasting companion tracking Ekadashi timings via geolocation and scientific autophagy stages.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
