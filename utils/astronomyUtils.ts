@@ -34,14 +34,16 @@ export const calculateTithi = (inputDate: Date): TithiData => {
 
   try {
     // 3. Ensure Library Availability
+    // In some build environments, the import * might behave differently (e.g. CJS vs ESM)
+    // We check if 'Astronomy' itself has the functions or if they are on 'default'
     const lib = Astronomy as any;
     if (!lib) return FALLBACK_TITHI;
 
-    // Handle different module structures (Default export vs Named export)
-    const GeoVector = lib.GeoVector || (lib.default && lib.default.GeoVector);
-    const Ecliptic = lib.Ecliptic || (lib.default && lib.default.Ecliptic);
+    const GeoVector = lib.GeoVector || (lib.default && lib.default.GeoVector) || Astronomy.GeoVector;
+    const Ecliptic = lib.Ecliptic || (lib.default && lib.default.Ecliptic) || Astronomy.Ecliptic;
 
     if (typeof GeoVector !== 'function' || typeof Ecliptic !== 'function') {
+      console.warn("Astronomy library functions not found");
       return FALLBACK_TITHI;
     }
 
@@ -187,8 +189,8 @@ export const getSunTimes = (inputDate: Date, location: GeoLocation) => {
     const lib = Astronomy as any;
     if (!lib) return { sunrise: null, sunset: null };
 
-    const Observer = lib.Observer || (lib.default && lib.default.Observer);
-    const SearchRiseSet = lib.SearchRiseSet || (lib.default && lib.default.SearchRiseSet);
+    const Observer = lib.Observer || (lib.default && lib.default.Observer) || Astronomy.Observer;
+    const SearchRiseSet = lib.SearchRiseSet || (lib.default && lib.default.SearchRiseSet) || Astronomy.SearchRiseSet;
 
     if (typeof Observer !== 'function' || typeof SearchRiseSet !== 'function') {
        return { sunrise: null, sunset: null };

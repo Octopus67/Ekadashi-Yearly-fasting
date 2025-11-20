@@ -14,6 +14,7 @@ export const useSadhana = () => {
     sunrise: null,
     sunset: null,
     paranaStart: null,
+    paranaEnd: null,
     loading: true,
     error: null
   });
@@ -97,8 +98,17 @@ export const useSadhana = () => {
       const paranaDay = new Date(fastingDateForParana.getTime());
       paranaDay.setDate(paranaDay.getDate() + 1);
       
-      // Calculate Sunrise for Parana Day
-      const { sunrise: paranaSunrise } = getSunTimes(paranaDay, location);
+      // Calculate Sun Times for Parana Day
+      const { sunrise: paranaSunrise, sunset: paranaSunset } = getSunTimes(paranaDay, location);
+
+      // Calculate Parana Window
+      // Start: Sunrise
+      // End: Roughly first 1/3rd of daylight hours (Traditional auspicious window if Dwadashi end is unknown)
+      let safeParanaEnd = null;
+      if (paranaSunrise && paranaSunset && !isNaN(paranaSunrise.getTime()) && !isNaN(paranaSunset.getTime())) {
+        const dayDuration = paranaSunset.getTime() - paranaSunrise.getTime();
+        safeParanaEnd = new Date(paranaSunrise.getTime() + (dayDuration / 3));
+      }
 
       // Calculate Yearly List
       // Ensure we only calculate for the current year of the user
@@ -108,7 +118,7 @@ export const useSadhana = () => {
       // Safeguard to ensure we don't put invalid dates in state
       const safeSunrise = (sunrise && !isNaN(sunrise.getTime())) ? sunrise : null;
       const safeSunset = (sunset && !isNaN(sunset.getTime())) ? sunset : null;
-      const safeParana = (paranaSunrise && !isNaN(paranaSunrise.getTime())) ? paranaSunrise : null;
+      const safeParanaStart = (paranaSunrise && !isNaN(paranaSunrise.getTime())) ? paranaSunrise : null;
       const safeNextDate = (nextDate && !isNaN(nextDate.getTime())) ? nextDate : null;
 
       setState({
@@ -118,7 +128,8 @@ export const useSadhana = () => {
         yearlyEkadashis: yearlyList,
         sunrise: safeSunrise,
         sunset: safeSunset,
-        paranaStart: safeParana,
+        paranaStart: safeParanaStart,
+        paranaEnd: safeParanaEnd,
         loading: false,
         error: null
       });

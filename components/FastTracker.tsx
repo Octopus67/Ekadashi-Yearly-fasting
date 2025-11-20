@@ -37,20 +37,29 @@ const FastTracker: React.FC<FastTrackerProps> = ({ isEkadashi }) => {
   const [editTimeStr, setEditTimeStr] = useState('');
   const [editDayOffset, setEditDayOffset] = useState(0); // 0 = today, -1 = yesterday
 
-  // Auto-start logic: If it is Ekadashi and we haven't started/stopped explicitly (null state), auto-start from midnight
+  // Auto-start logic:
+  // Only run this effect when isEkadashi changes or on mount.
+  // We DO NOT include startTime in dependencies to prevent re-triggering when user manually stops the fast.
   useEffect(() => {
-    if (isEkadashi && startTime === null) {
-      // Check if we deliberately stopped it recently to avoid loop? 
-      // For now, simple logic: Ekadashi = Auto Start Midnight.
-      const midnight = new Date();
-      midnight.setHours(0, 0, 0, 0);
-      setStartTime(midnight.getTime());
+    if (isEkadashi) {
+      setStartTime(prev => {
+        // If already running, don't touch it
+        if (prev !== null) return prev;
+        
+        // If not running, auto-start from midnight
+        const midnight = new Date();
+        midnight.setHours(0, 0, 0, 0);
+        return midnight.getTime();
+      });
     }
-  }, [isEkadashi, startTime]);
+  }, [isEkadashi]);
 
   // Timer Tick
   useEffect(() => {
-    if (startTime === null) return;
+    if (startTime === null) {
+      setElapsedMs(0);
+      return;
+    }
 
     const tick = () => {
       const now = Date.now();

@@ -16,6 +16,7 @@ const App: React.FC = () => {
     sunrise, 
     sunset, 
     paranaStart, 
+    paranaEnd,
     loading, 
     error,
     location,
@@ -243,7 +244,7 @@ const App: React.FC = () => {
         
         {/* Parana Time Display */}
         {isParanaValid && paranaStart && (
-          <div className="bg-indigo-900/30 border border-indigo-500/20 rounded-xl p-4 mb-6 flex items-center justify-between max-w-sm mx-auto backdrop-blur-sm">
+          <div className="bg-indigo-900/30 border border-indigo-500/20 rounded-xl p-4 mb-6 flex items-center justify-between max-w-md mx-auto backdrop-blur-sm">
              <div className="flex items-center gap-3">
                <div className="p-2 bg-amber-500/10 rounded-lg">
                   <Sunrise className="w-5 h-5 text-amber-400" />
@@ -258,8 +259,11 @@ const App: React.FC = () => {
              <div className="text-right">
                <span className="block text-lg font-serif font-bold text-amber-200">
                  {paranaStart.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+                 {paranaEnd && !isNaN(paranaEnd.getTime()) && (
+                    <> – {paranaEnd.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</>
+                 )}
                </span>
-               <span className="text-xs text-white/40">After Sunrise</span>
+               <span className="text-xs text-white/40">Auspicious Window</span>
              </div>
           </div>
         )}

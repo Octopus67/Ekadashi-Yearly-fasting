@@ -33,6 +33,7 @@ export interface SadhanaState {
   sunrise: Date | null;
   sunset: Date | null;
   paranaStart: Date | null;
+  paranaEnd: Date | null;
   loading: boolean;
   error: string | null;
 }
